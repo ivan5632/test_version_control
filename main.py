@@ -1,38 +1,44 @@
 import math
-first_primes = [2, 3, 5, 7, 11, 13, 17, 19, 23]
-min_value = 4
+from collections import Counter
 
-def is_prime(n):
-    try:
-        n = int(n)
-        assert n >= min_value
+min_value = 2
 
-        n_isqrt = math.isqrt(n)
-        rest_of_the_list = [i for i in range(max(first_primes) + 1, n_isqrt + 1) if not (i%2==0 or i%3==0 or i%5==0 or i%7==0)]
-        list_to_check = [i for i in [*first_primes, *rest_of_the_list] if i<=n_isqrt]
-        return list_to_check
+def smallest_prime_divisor(n):
 
-    except:
-        print(f'Error: input must be integer >= {min_value}!')
-        return None
+    divisor = n
+    for i in range(2, math.isqrt(n)+1):
+        if n % i == 0:
+            divisor = i
+            break
 
+    return divisor
 
-print(is_prime(3))
+def factorize(n):
 
-# n = input("Enter positive integer to factorize: ")
-# try:
-#     n = int(n)
-#     assert n > 0
-#
-#     n_isqrt = math.isqrt(n)
-#     rest_of_the_list = [ i for i in range(max(first_primes) + 1, n_isqrt + 1) if not (i%2==0 or i%3==0 or i%5==0 or i%7==0)]
-#
-#
-#     print ([ *first_primes, *rest_of_the_list ])
-#     # print(max(first_primes))
-#     # for i in range(1, 10):
-#     #     print(i)
-#     # print(x)
-# except:
-#     print('Error: input must be integer > 0!')
+    factors = []
+    m = n
+    while (div := smallest_prime_divisor(m)) < m:
+        factors.append(div)
+        m //= div
+    factors.append(div)
+
+    return factors
+
+n = input("Enter positive integer to factorize: ")
+try:
+    n = int(n)
+    assert n >= min_value
+
+    factorization_dict = Counter(factorize(n))
+    result = ''
+    for factor, exponent in factorization_dict.items():
+        result += str(factor)
+        if exponent > 1:
+            result += f'^{str(exponent)}'
+        result += ' * '
+    result = result[:-3] # remove last ' * '
+    print(result)
+
+except:
+    print(f'Error: input must be integer >= {min_value}!')
 
